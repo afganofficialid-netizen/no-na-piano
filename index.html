@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#10123b">
+<title>NO NA Piano</title>
+<style>
+:root{--pink:#ff38c8;--cyan:#24eaff;--blue:#355dff;--bg:#080b25}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#273a83 0,#10123b 45%,#07091d 100%);color:#fff;font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+.app{max-width:540px;margin:auto;min-height:100vh;padding:16px 14px 28px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.logo{font-weight:1000;font-size:25px;letter-spacing:1px;line-height:1}.logo span{color:var(--pink);text-shadow:0 0 18px #ff38c8}.sub{font-size:11px;letter-spacing:3px;color:#a8caff;margin-top:6px}
+.pill{border:1px solid #ffffff30;background:#ffffff12;border-radius:99px;padding:8px 11px;font-size:12px;color:#ccecff}
+.hero{margin:20px 0 16px;padding:18px;border:1px solid #ffffff20;border-radius:22px;background:linear-gradient(130deg,#ff38c82a,#24eaff16 65%,#5c49ff35);box-shadow:0 12px 40px #0005}
+.hero h1{margin:0;font-size:26px;line-height:1.05}.hero p{color:#c2d6ff;font-size:13px;margin:9px 0 14px}
+.stats{display:flex;gap:8px}.stat{flex:1;background:#060a28a8;border:1px solid #ffffff16;border-radius:12px;padding:9px}.stat small{display:block;color:#92b4e7;font-size:10px}.stat b{font-size:18px}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin:18px 2px 10px;font-weight:800}.section-title small{font-weight:500;color:#a9bce9}
+.songs{display:grid;gap:9px}.song{display:flex;align-items:center;gap:12px;padding:10px;border-radius:16px;background:#ffffff0c;border:1px solid #ffffff18;cursor:pointer}.song.active{border-color:var(--cyan);background:#24eaff16;box-shadow:0 0 18px #24eaff17}
+.cover{width:54px;height:54px;border-radius:12px;display:grid;place-items:center;font-size:22px;font-weight:900;background:linear-gradient(135deg,#ff28bd,#573dff 55%,#20eaff);box-shadow:inset 0 0 16px #fff4;flex-shrink:0}.song-info{flex:1;min-width:0}.song-info b{display:block;font-size:14px}.song-info small{color:#a9bce9;font-size:11px}.tag{font-size:10px;color:#8deeff;border:1px solid #24eaff55;border-radius:99px;padding:4px 7px}
+button{border:0;color:#fff;font-weight:800;border-radius:13px;padding:12px 15px;background:linear-gradient(100deg,#ef2ab9,#6250ff);box-shadow:0 5px 20px #6a37ff35;font-size:14px;cursor:pointer}
+button.secondary{background:#ffffff12;border:1px solid #ffffff24;box-shadow:none}
+.controls{display:flex;gap:8px;margin-top:13px}.controls button{flex:1}
+.game{display:none;margin-top:18px}.game.show{display:block}
+.game-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.game-top strong{font-size:20px}.game-top small{color:#aac4ff}
+#board{height:min(54vh,440px);min-height:320px;position:relative;overflow:hidden;border:1px solid #ffffff35;border-radius:18px;background:linear-gradient(#080c2b,#12194b);display:grid;grid-template-columns:repeat(4,1fr);touch-action:manipulation;box-shadow:inset 0 0 30px #0009}
+.lane{position:relative;border-right:1px solid #ffffff20;overflow:hidden}.lane:last-child{border:0}.lane.hit{background:#24eaff30}
+.tile{position:absolute;left:5%;width:90%;height:75px;border-radius:9px;background:linear-gradient(145deg,#fff,#a9f7ff 20%,#3be8ff 52%,#5b43ff);box-shadow:0 0 18px #24eaff90,inset 0 0 10px #fff9;border:1px solid #ffffffb0}
+.tile:after{content:"";position:absolute;inset:7px;border:1px solid #ffffff60;border-radius:5px}
+.hitline{position:absolute;left:0;right:0;bottom:62px;height:3px;background:linear-gradient(90deg,transparent,var(--pink),var(--cyan),transparent);box-shadow:0 0 16px var(--cyan);pointer-events:none;z-index:3}
+.overlay{position:absolute;inset:0;background:#070a23cc;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px;z-index:5}.overlay h2{margin:0 0 8px}.overlay p{color:#c3d6ff;font-size:13px;line-height:1.5}
+#board.running .overlay{display:none}
+.meter{height:5px;background:#ffffff18;border-radius:99px;margin-top:12px;overflow:hidden}.meter span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--cyan))}
+.note{font-size:11px;line-height:1.5;color:#9eb5e7;margin-top:18px}
+footer{text-align:center;color:#6074a7;font-size:10px;margin-top:24px}
+@media(max-width:360px){.logo{font-size:21px}.hero h1{font-size:23px}.pill{font-size:10px}}
+</style>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#10123b"><link rel="icon" href="icon-192.png"><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}</script></head>
+<body><main class="app">
+<header><div><div class="logo">NO <span>NA</span> PIANO</div><div class="sub">RHYTHM GAME • FAN PROTOTYPE</div></div><div class="pill">✦ <span id="totalScore">0</span> PTS</div></header>
+<section class="hero"><h1>Feel the beat.<br><span style="color:var(--cyan)">Hit the lights.</span></h1><p>Versi fan-made dengan nuansa neon pink & biru. Pilih lagu, lalu ketuk ubin saat melewati garis cahaya.</p><div class="stats"><div class="stat"><small>SKOR TERBAIK</small><b id="best">0</b></div><div class="stat"><small>AKURASI</small><b id="accuracy">—</b></div><div class="stat"><small>KOMBO</small><b id="combo">0×</b></div></div></section>
+<div class="section-title">Pilih lagu <small>DEMO RHYTHM</small></div>
+<div class="songs" id="songs">
+<div class="song active" data-song="Shoot"><div class="cover">N</div><div class="song-info"><b>Shoot</b><small>NO NA • Demo beat</small></div><span class="tag">DEMO</span></div>
+<div class="song" data-song="The One"><div class="cover" style="background:linear-gradient(135deg,#24eaff,#563aff,#ff38c8)">✦</div><div class="song-info"><b>The One</b><small>NO NA • Demo beat</small></div><span class="tag">DEMO</span></div>
+<div class="song" data-song="Falling in Love"><div class="cover" style="background:linear-gradient(135deg,#ff8acb,#693dff,#24eaff)">♡</div><div class="song-info"><b>Falling in Love</b><small>NO NA • Demo beat</small></div><span class="tag">DEMO</span></div>
+<div class="song" data-song="Custom Track"><div class="cover" style="background:linear-gradient(135deg,#1fdbd5,#315bff)">♫</div><div class="song-info"><b>Lagu milikmu</b><small>Muat audio yang kamu punya izinnya</small></div><span class="tag">AUDIO</span></div>
+</div>
+<div class="controls"><button id="startBtn">▶ MULAI MAIN</button><button class="secondary" id="uploadBtn">＋ AUDIO</button><input type="file" id="audioFile" accept="audio/*" hidden></div>
+<section class="game" id="game"><div class="game-top"><div><small>SEDANG DIMAINKAN</small><br><strong id="currentSong">Shoot</strong></div><div style="text-align:right"><small>SKOR</small><br><strong id="score">0</strong></div></div>
+<div id="board"><div class="lane" data-lane="0"></div><div class="lane" data-lane="1"></div><div class="lane" data-lane="2"></div><div class="lane" data-lane="3"></div><div class="hitline"></div><div class="overlay"><h2>Siap bermain?</h2><p>Ketuk ubin yang turun ketika mendekati garis bercahaya. Sentuh lajur yang tepat.</p><button id="goBtn">MULAI</button></div></div>
+<div class="meter"><span id="progress"></span></div><div class="controls"><button class="secondary" id="pauseBtn">Ⅱ JEDA</button><button class="secondary" id="backBtn">⌂ MENU</button></div></section>
+<div class="note">Catatan: ini prototipe yang bisa dimainkan, bukan game resmi NO NA. Lagu yang terdaftar memakai pola nada demo, bukan rekaman asli. Untuk audio lagu lengkap, gunakan file yang kamu miliki atau berhak gunakan; sinkronisasi ubin per lagu perlu chart ritme khusus.</div>
+<footer>NO NA PIANO • PROTOTIPE FAN-MADE • v0.1</footer>
+</main>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let selected='Shoot', score=0, combo=0, hits=0, attempts=0, best=Number(localStorage.getItem('nona-best')||0);
+let running=false, paused=false, tiles=[], last=0, spawn=0, raf=0, duration=45, elapsed=0, audioCtx=null, customAudio=null, customUrl=null;
+$('#best').textContent=best;
+function chooseSong(el){$$('.song').forEach(s=>s.classList.toggle('active',s===el));selected=el.dataset.song;$('#currentSong').textContent=selected;}
+$$('.song').forEach(el=>el.addEventListener('click',()=>chooseSong(el)));
+$('#uploadBtn').onclick=()=>$('#audioFile').click();
+$('#audioFile').onchange=e=>{const f=e.target.files[0];if(!f)return;if(customUrl)URL.revokeObjectURL(customUrl);customUrl=URL.createObjectURL(f);if(customAudio){customAudio.pause();customAudio=null;}const el=$('.song[data-song="Custom Track"]');chooseSong(el);el.querySelector('small').textContent=f.name;el.querySelector('.tag').textContent='SIAP';};
+function tone(freq,when,dur=.11){try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(.0001,when);g.gain.exponentialRampToValueAtTime(.12,when+.01);g.gain.exponentialRampToValueAtTime(.0001,when+dur);o.connect(g);g.connect(audioCtx.destination);o.start(when);o.stop(when+dur+.02)}catch(e){}}
+function start(){if(running)return;$('#game').classList.add('show');score=0;combo=0;hits=0;attempts=0;elapsed=0;spawn=0;tiles=[];$$('.tile').forEach(t=>t.remove());$('#score').textContent='0';$('#combo').textContent='0×';$('#accuracy').textContent='—';$('#progress').style.width='0%';$('#board').classList.add('running');running=true;paused=false;last=performance.now();if(selected==='Custom Track'&&customUrl){customAudio=new Audio(customUrl);customAudio.currentTime=0;customAudio.play().catch(()=>{});duration=Number.isFinite(customAudio.duration)?customAudio.duration:180;}else{duration=45;}cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);$('#game').scrollIntoView({behavior:'smooth',block:'start'});}
+function makeTile(lane){const el=document.createElement('div');el.className='tile';el.style.top='-85px';$('#board').children[lane].appendChild(el);const t={el,lane,y:-85,hit:false};tiles.push(t);}
+function loop(now){if(!running)return;if(paused){last=now;raf=requestAnimationFrame(loop);return;}let dt=Math.min((now-last)/1000,.05);last=now;elapsed+=dt;
+spawn+=dt;let interval=selected==='Custom Track'?.48:.55;if(spawn>=interval){spawn=0;makeTile(Math.floor(Math.random()*4));}
+const boardH=$('#board').clientHeight, speed=boardH*.58;
+tiles.forEach(t=>{t.y+=speed*dt;t.el.style.top=t.y+'px';if(!t.hit&&t.y>boardH-62){t.hit=true;attempts++;combo=0;updateStats();t.el.style.opacity='.25';setTimeout(()=>t.el.remove(),120);}});
+tiles=tiles.filter(t=>!t.hit||t.y<boardH+10);
+$('#progress').style.width=Math.min(100,elapsed/duration*100)+'%';
+if(selected==='Custom Track'&&customAudio&&customAudio.ended){finish();return;}
+if(elapsed>=duration){finish();return;}raf=requestAnimationFrame(loop);}
+function tap(lane){if(!running||paused)return;const h=$('#board').clientHeight;const candidates=tiles.filter(t=>t.lane===lane&&!t.hit).sort((a,b)=>Math.abs((a.y+38)-(h-62))-Math.abs((b.y+38)-(h-62)));const t=candidates[0];if(t&&Math.abs((t.y+38)-(h-62))<125){t.hit=true;attempts++;hits++;combo++;score+=combo%10===0?20:10;t.el.style.transform='scale(.86)';t.el.style.opacity='.3';tone([523.25,659.25,783.99,1046.5][lane],audioCtx?audioCtx.currentTime:0);setTimeout(()=>t.el.remove(),90);updateStats();}else{attempts++;combo=0;updateStats();}}
+$$('.lane').forEach(l=>{l.addEventListener('pointerdown',e=>{e.preventDefault();l.classList.add('hit');tap(Number(l.dataset.lane));setTimeout(()=>l.classList.remove('hit'),90);});});
+function updateStats(){$('#score').textContent=score;$('#totalScore').textContent=score;$('#combo').textContent=combo+'×';$('#accuracy').textContent=attempts?Math.round(hits/attempts*100)+'%':'—';}
+function finish(){running=false;cancelAnimationFrame(raf);if(customAudio)customAudio.pause();$('#board').classList.remove('running');$('.overlay').innerHTML='<h2>SELESAI! ✦</h2><p>Skor kamu: <b>'+score+'</b><br>Ketepatan: '+(attempts?Math.round(hits/attempts*100):0)+'%</p><button onclick="start()">MAIN LAGI</button>';if(score>best){best=score;localStorage.setItem('nona-best',best);$('#best').textContent=best;}}
+$('#startBtn').onclick=start;$('#goBtn').onclick=start;
+$('#pauseBtn').onclick=()=>{if(!running)return;paused=!paused;$('#pauseBtn').textContent=paused?'▶ LANJUT':'Ⅱ JEDA';if(customAudio){if(paused)customAudio.pause();else customAudio.play().catch(()=>{});}};
+$('#backBtn').onclick=()=>{running=false;cancelAnimationFrame(raf);if(customAudio)customAudio.pause();$('#game').classList.remove('show');};
+</script></body></html>
